@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: PediaCare Platform API
+  version: 1.0.0
+  description: Especificacao minima para demonstracao em artigo.
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service status
+  /content:
+    get:
+      summary: List content
+      parameters:
+        - in: query
+          name: channel
+          schema:
+            type: string
+            enum: [linkedin, medium]
+      responses:
+        '200':
+          description: List returned
+    post:
+      summary: Create content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContentDto'
+      responses:
+        '201':
+          description: Content created
+  /content/{id}:
+    get:
+      summary: Get one content
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content found
+        '404':
+          description: Not found
+    patch:
+      summary: Update one content
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContentDto'
+      responses:
+        '200':
+          description: Content updated
+        '404':
+          description: Not found
+    delete:
+      summary: Delete one content
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content deleted
+        '404':
+          description: Not found
+components:
+  schemas:
+    CreateContentDto:
+      type: object
+      required: [title, summary, body, channel]
+      properties:
+        title:
+          type: string
+        summary:
+          type: string
+        body:
+          type: string
+        channel:
+          type: string
+          enum: [linkedin, medium]
+        tags:
+          type: array
+          items:
+            type: string
+    UpdateContentDto:
+      type: object
+      properties:
+        title:
+          type: string
+        summary:
+          type: string
+        body:
+          type: string
+        channel:
+          type: string
+          enum: [linkedin, medium]
+        tags:
+          type: array
+          items:
+            type: string

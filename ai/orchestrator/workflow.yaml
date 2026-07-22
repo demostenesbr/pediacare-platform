@@ -1,0 +1,27 @@
+name: pediacare-content-pipeline
+version: 1
+
+steps:
+  - id: content_draft
+    agent: content-agent
+    input: draft
+    output: structuredDraft
+
+  - id: seo_review
+    agent: seo-agent
+    input: structuredDraft
+    output: seoOptimized
+
+  - id: legal_review
+    agent: legal-agent
+    input: seoOptimized
+    output: compliantDraft
+
+  - id: reporting
+    agent: reporting-agent
+    input: compliantDraft
+    output: publicationSummary
+
+outputs:
+  - compliantDraft
+  - publicationSummary

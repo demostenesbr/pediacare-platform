@@ -15,8 +15,16 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return API metadata', () => {
+      const result = appController.getRoot();
+      expect(result.name).toBe('pediacare-platform-api');
+      expect(result.docs).toBe('/api/docs');
+    });
+
+    it('should return health payload', () => {
+      const health = appController.getHealth();
+      expect(health.status).toBe('ok');
+      expect(health.service).toBe('api');
     });
   });
 });

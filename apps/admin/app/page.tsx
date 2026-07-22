@@ -1,65 +1,89 @@
-import Image from "next/image";
+type ContentRecord = {
+  id: string;
+  title: string;
+  channel: 'linkedin' | 'medium';
+  updatedAt: string;
+};
 
-export default function Home() {
+async function getDashboardData() {
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/content`, { cache: 'no-store' });
+    if (!response.ok) return [] as ContentRecord[];
+    return response.json();
+  } catch {
+    return [] as ContentRecord[];
+  }
+}
+
+export default async function Home() {
+  const items = await getDashboardData();
+  const byChannel = items.reduce(
+    (acc, item) => {
+      acc[item.channel] += 1;
+      return acc;
+    },
+    { linkedin: 0, medium: 0 },
+  );
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main
+      className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#d7f9f4,_#f5f3ff_45%,_#fff7ed)] px-6 py-10 text-slate-900"
+      style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+    >
+      <section className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-3">
+        <article className="rounded-3xl border border-emerald-200 bg-white/85 p-6 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.2em] text-emerald-600">Posts</p>
+          <h2 className="mt-3 text-3xl font-bold">{items.length}</h2>
+          <p className="mt-1 text-sm text-slate-600">Total de conteudos cadastrados</p>
+        </article>
+        <article className="rounded-3xl border border-cyan-200 bg-white/85 p-6 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.2em] text-cyan-700">LinkedIn</p>
+          <h2 className="mt-3 text-3xl font-bold">{byChannel.linkedin}</h2>
+          <p className="mt-1 text-sm text-slate-600">Materiais prontos para publicacao</p>
+        </article>
+        <article className="rounded-3xl border border-orange-200 bg-white/85 p-6 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.2em] text-orange-700">Medium</p>
+          <h2 className="mt-3 text-3xl font-bold">{byChannel.medium}</h2>
+          <p className="mt-1 text-sm text-slate-600">Artigos longos em edicao</p>
+        </article>
+      </section>
+
+      <section className="mx-auto mt-6 max-w-6xl rounded-3xl border border-slate-200 bg-white/80 p-6">
+        <h1 className="text-2xl font-bold">Painel operacional do MVP</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Consuma a documentacao em /api/docs para criar, editar e remover conteudos.
+        </p>
+
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-slate-200 text-slate-600">
+                <th className="py-2">Titulo</th>
+                <th className="py-2">Canal</th>
+                <th className="py-2">Atualizado em</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} className="border-b border-slate-100">
+                  <td className="py-3">{item.title}</td>
+                  <td className="py-3 uppercase">{item.channel}</td>
+                  <td className="py-3">{new Date(item.updatedAt).toLocaleString('pt-BR')}</td>
+                </tr>
+              ))}
+              {items.length === 0 && (
+                <tr>
+                  <td className="py-3 text-slate-500" colSpan={3}>
+                    Nenhum item encontrado. Inicie a API e cadastre conteudos para visualizar o painel.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
