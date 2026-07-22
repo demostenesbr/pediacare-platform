@@ -6,7 +6,7 @@ Accepted
 
 ## Contexto
 
-Precisamos de um MVP para demonstracao publica (LinkedIn/Medium) cobrindo backend, frontend, mobile, IA e infraestrutura.
+Precisamos de um MVP para demonstracao publica de um serviço profissional de fisioterapia, com o mínimo funcionável, para um artigo no LinkedIn e no Medium, cobrindo backend, frontend, mobile, IA e infraestrutura.
 
 ## Decisao
 
